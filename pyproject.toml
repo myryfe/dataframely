@@ -1,0 +1,88 @@
+[build-system]
+build-backend = "maturin"
+requires = ["maturin>=1.7,<2.0"]
+
+[project]
+authors = [
+  { name = "Andreas Albert", email = "andreas.albert@quantco.com" },
+  { name = "Daniel Elsner", email = "daniel.elsner@quantco.com" },
+  { name = "Oliver Borchert", email = "oliver.borchert@quantco.com" },
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dependencies = ["numpy", "polars>=1.12"]
+description = "A declarative, polars-native data frame validation library"
+name = "dataframely"
+readme = "README.md"
+requires-python = ">=3.11"
+version = "0.0.0"
+
+[project.urls]
+repository = "https://github.com/quantco/dataframely"
+
+[tool.maturin]
+module-name = "dataframely._extre"
+profile = "release"
+
+[tool.setuptools.packages.find]
+include = ["dataframely"]
+namespaces = false
+
+[project.scripts]
+
+[tool.docformatter]
+black = true # only sets the style options to the default values of black
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+ignore = [
+  "E501", # https://docs.astral.sh/ruff/faq/#is-the-ruff-linter-compatible-with-black
+  "N803", # https://docs.astral.sh/ruff/rules/invalid-argument-name
+  "N806", # https://docs.astral.sh/ruff/rules/non-lowercase-variable-in-function
+]
+select = [
+  # pyflakes
+  "F",
+  # pycodestyle
+  "E",
+  "W",
+  # isort
+  "I",
+  # pep8-naming
+  "N",
+  # pyupgrade
+  "UP",
+]
+
+[tool.ruff.format]
+indent-style = "space"
+quote-style = "double"
+
+[tool.mypy]
+check_untyped_defs = true
+exclude = ["docs/"]
+explicit_package_bases = true
+no_implicit_optional = true
+plugins = ["dataframely.mypy"]
+python_version = '3.11'
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+ignore_missing_imports = true
+module = ["pyarrow.*"]
+
+[tool.pytest.ini_options]
+addopts = "--import-mode=importlib"
+filterwarnings = [
+  "ignore:datetime.datetime.utcfromtimestamp\\(\\) is deprecated.*:DeprecationWarning",
+]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+omit = ["dataframely/mypy.py", "dataframely/testing/generate.py"]
