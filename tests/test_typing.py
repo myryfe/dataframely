@@ -9,7 +9,7 @@
 import datetime
 import decimal
 import functools
-from typing import Any
+from typing import Any, NotRequired, TypedDict
 
 import polars as pl
 import pytest
@@ -61,7 +61,21 @@ class MySecondSchema(dy.Schema):
     b = dy.Integer()
 
 
-class MyCollection(dy.Collection):
+class SamplingTypeFirst(TypedDict):
+    a: NotRequired[int]
+
+
+class SamplingTypeSecond(TypedDict):
+    a: NotRequired[int]
+    b: NotRequired[int]
+
+
+class SamplingType(TypedDict):
+    first: NotRequired[SamplingTypeFirst]
+    second: NotRequired[SamplingTypeSecond]
+
+
+class MyCollection(dy.Collection[SamplingType]):
     first: dy.LazyFrame[MyFirstSchema]
     second: dy.LazyFrame[MySecondSchema]
 
@@ -71,6 +85,12 @@ def test_collection_filter_return_value() -> None:
         {"first": pl.LazyFrame(), "second": pl.LazyFrame()},
     )
     assert len(failure["third"]) == 0  # type: ignore[misc]
+
+
+def test_collection_concat() -> None:
+    c1 = MyCollection.create_empty()
+    c2 = MyCollection.create_empty()
+    dy.concat_collection_members([c1, c2])
 
 
 # ------------------------------------------------------------------------------------ #
